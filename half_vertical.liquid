@@ -4,14 +4,14 @@
       <div class="item">
         <div class="meta"></div>
         <div class="content">
-          <span class="value value--tnums">{{sum_pageviews | number_with_delimiter }}</span>
+          <span class="value value--tnums">{{ total_pageviews | number_with_delimiter }}</span>
           <span class="label">Pageviews</span>
         </div>
       </div>
       <div class="item">
         <div class="meta"></div>
         <div class="content">
-          <span class="value value--tnums">{{sum_sessions | number_with_delimiter }}</span>
+          <span class="value value--tnums">{{ total_visitors | number_with_delimiter }}</span>
           <span class="label">Visitors</span>
         </div>
       </div>
@@ -20,77 +20,7 @@
     <div id="{{ chart_id }}" style="width: 100%"></div>
   </div>
 
-  <div class="title_bar">
-    <img class="image" src="https://{{trmnl.plugin_settings.custom_fields_values.hostname}}/favicon-32x32.png" />
-    <span class="title">Umami</span>
-    <span class="instance">{{trmnl.plugin_settings.instance_name}}</span>
-  </div>
+  {% render "title_bar", trmnl: trmnl %}
 </div>
 
-<script type="text/javascript">
-  var pageviews = [
-    {% for item in pageviews %}
-      ["{{item.x | slice: 0, 10}}", {{ item.y }}]{% unless forloop.last %},{% endunless %}
-    {% endfor %}
-  ];
-
-  var createChart = function() {
-    new Chartkick["LineChart"](
-    "{{ chart_id }}",
-    pageviews,
-    {
-      adapter: "highcharts",
-      prefix: "",
-      thousands: ",",
-      points: false,
-      colors: ["black"],
-      curve: true,
-      library: {
-        chart: {
-          height: 320,
-          spacing: [10, 0, 0, 0]
-        },
-        plotOptions: {
-          series: {
-            animation: false,
-            lineWidth: 4
-          }
-        },
-        yAxis: {
-          labels: {
-            style: {
-              fontSize: "16px",
-              color:"#000000"
-            }
-          },
-          gridLineDashStyle: "shortdot",
-          gridLineWidth: 1,
-          gridLineColor: "#000000",
-          tickAmount: 5
-        },
-        xAxis: {
-          type: "daytime",
-          labels: {
-            style: {
-              fontSize: "16px",
-              color: "#000000"
-            }
-          },
-          lineWidth: 0,
-          gridLineDashStyle: "dot",
-          tickWidth: 1,
-          tickLength: 0,
-          gridLineWidth: 1,
-          gridLineColor: "#000000",
-          tickPixelInterval: 120
-        }
-      }
-    });
-  };
-
-  if ("Chartkick" in window) {
-    createChart();
-  } else {
-    window.addEventListener("chartkick:load", createChart, true);
-  }
-</script>
+{% render "chart_script", pageviews: pageviews, chart_id: chart_id %}

@@ -3,12 +3,101 @@
 
 {% assign chart_id = "chart-" | append_random %}
 
-{% assign sum_pageviews = 0 %}
-{% for item in pageviews %}
-{% assign sum_pageviews = sum_pageviews | plus: item.y %}
-{% endfor %}
+{% assign pageviews = IDX_0.pageviews %}
 
-{% assign sum_sessions = 0 %}
-{% for item in sessions %}
-{% assign sum_sessions = sum_sessions | plus: item.y %}
-{% endfor %}
+{% assign total_pageviews = IDX_1.pageviews.value %}
+
+{% assign total_visitors = IDX_1.visitors.value %}
+
+{% assign total_visits = IDX_1.visits.value %}
+{% assign total_time = IDX_1.totaltime.value %}
+{% assign average_seconds = total_time | divided_by: total_visits %}
+{% assign average_minutes = average_seconds | divided_by: 60 %}
+{% assign average_remainder_seconds = average_seconds | modulo: 60 %}
+{% if average_minutes > 0 %}
+  {% assign average_duration = average_minutes | append: 'm' %}
+  {% if average_remainder_seconds > 0 %}
+    {% assign average_duration = average_duration |  append: ' ' | append: average_remainder_seconds | append: 's' %}
+  {% endif %}
+{% else %}
+  {% assign average_duration = average_remainder_seconds | append: 's' %}
+{% endif %}
+
+
+{% template title_bar %}
+<div class="title_bar">
+  <img class="image" src="https://{{ trmnl.plugin_settings.custom_fields_values.hostname }}/favicon-32x32.png" />
+  <span class="title">Umami</span>
+  <span class="instance">{{ trmnl.plugin_settings.instance_name }}</span>
+</div>
+{% endtemplate %}
+
+{% template chart_script %}
+<script type="text/javascript">
+  var pageviews = [
+    {% for item in pageviews %}
+    ["{{ item.x | slice: 0, 10 }}", {{ item.y }}]{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ];
+
+  var createChart = function () {
+    new Chartkick["LineChart"](
+      "{{ chart_id }}",
+      pageviews,
+      {
+        adapter: "highcharts",
+        prefix: "",
+        thousands: ",",
+        points: false,
+        colors: ["black"],
+        curve: true,
+        library: {
+          chart: {
+            height: {{ chart_height | default: 320 }},
+            spacing: [10, 0, 10, 0]
+          },
+          plotOptions: {
+            series: {
+              animation: false,
+              lineWidth: 4
+            }
+          },
+          yAxis: {
+            labels: {
+              style: {
+                fontSize: "16px",
+                color: "#000000"
+              }
+            },
+            gridLineDashStyle: "shortdot",
+            gridLineWidth: 1,
+            gridLineColor: "#000000",
+            tickAmount: 5
+          },
+          xAxis: {
+            type: "daytime",
+            labels: {
+              style: { fontSize: '16px', color: '#000000' },
+              padding: 0,
+              y: {{ x_axis_label_y | default: 15 }},
+            },
+            height: {{ x_axis_height | default: 290 }},
+            lineWidth: 0,
+            gridLineDashStyle: "dot",
+            tickWidth: 1,
+            tickLength: 0,
+            gridLineWidth: 1,
+            gridLineColor: "#000000",
+            tickPixelInterval: 120
+          }
+        }
+      });
+  };
+
+  if ("Chartkick" in window) {
+    createChart();
+  } else {
+    window.addEventListener("chartkick:load", createChart, true);
+  }
+</script>
+{% endtemplate %}

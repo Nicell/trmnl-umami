@@ -4,7 +4,7 @@ no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
 polling_verb: get
-polling_url: 'https://{{ hostname }}/api/websites/{{ website_id }}/pageviews?startAt={{ ''now'' | date: ''%s'' | minus: lookback_period | times: 1000 }}&endAt={{ ''now'' | date: ''%s'' | times: 1000}}&unit=day&timezone={{ time_zone | url_encode}}'
+polling_url: 'https://{{ hostname }}/api/websites/{{ website_id }}/pageviews?startAt={{ ''now'' | date: ''%s'' | minus: lookback_period | times: 1000 }}&endAt={{ ''now'' | date: ''%s'' | times: 1000}}&unit=day&timezone={{ time_zone | url_encode}}\nhttps://{{ hostname }}/api/websites/{{ website_id }}/stats?startAt={{ ''now'' | date: ''%s'' | minus: lookback_period | times: 1000 }}&endAt={{ ''now'' | date: ''%s'' | times: 1000}}'
 polling_headers: Authorization=Bearer {{ api_key }}
 id: 25370
 custom_fields:
@@ -14,7 +14,6 @@ custom_fields:
   description: Web analytics plugin for Umami
   github_url: https://github.com/nicell/trmnl-umami
   learn_more_url: https://umami.is/
-  email_address: nick@winans.io
 - keyname: lookback_period
   field_type: select
   options:
