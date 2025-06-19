@@ -1,0 +1,14 @@
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartkick@5.0.1/dist/chartkick.min.js"></script>
+
+{% assign chart_id = "chart-" | append_random %}
+
+{% assign sum_pageviews = 0 %}
+{% for item in pageviews %}
+{% assign sum_pageviews = sum_pageviews | plus: item.y %}
+{% endfor %}
+
+{% assign sum_sessions = 0 %}
+{% for item in sessions %}
+{% assign sum_sessions = sum_sessions | plus: item.y %}
+{% endfor %}
